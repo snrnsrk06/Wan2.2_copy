@@ -1,3 +1,108 @@
+Cuda Toolkit archive  https://developer.nvidia.com/cuda-toolkit-archive
+
+CuDNN archive https://developer.nvidia.com/rdp/cudnn-archive
+
+Cuda Toolkit 12.8 버전 설치
+
+cuDNN 12.x 다운로드 및 압축해제 후  bin, include, lib 을 cuda 12.8 폴더에 덮어쓰기
+
+Wan2.2 오픈소스 다운 로드 https://github.com/Wan-Video/Wan2.2
+
+모델 다운로드 (약 50GB) ... (경로가 wan2.2인데 wan2___2 이렇게 되어 있는 부분이 있음)
+
+모델 다운로드는 명령줄(Command Line) 또는 ModelScope SDK 사용을 권장합니다.
+
+사용 방법 안내
+
+다운로드 전에, 아래 명령어를 통해 먼저 ModelScope를 설치하세요.
+
+pip install modelscope
+
+명령줄(Command Line) 다운로드
+
+전체 모델 라이브러리 다운로드
+
+modelscope download --model Wan-AI/Wan2.2-S2V-14B     # 또는 Wan2.2-Animate-14B
+
+단일 파일을 지정한 로컬 폴더에 다운로드하기
+
+(예: README.md 파일을 현재 경로의 “dir” 디렉터리에 다운로드하는 경우)
+
+modelscope download --model Wan-AI/Wan2.2-S2V-14B README.md --local_dir ./dir
+
+더 많고 다양한 명령줄 다운로드 옵션은
+
+상세 문서를 참고하세요.
+
+SDK 다운로드
+
+#모델 다운로드
+
+from modelscope import snapshot_download model_dir = snapshot_download('Wan-AI/Wan2.2-S2V-14B')
+
+Git 다운로드
+
+lfs가 올바르게 설치되어 있는지 확인하세요.
+
+git lfs install
+
+git clone https://www.modelscope.cn/Wan-AI/Wan2.2-S2V-14B.git
+
+lfs 대용량 파일 다운로드를 건너뛰고 싶다면, 아래 명령어를 사용할 수 있습니다.
+
+GIT_LFS_SKIP_SMUDGE=1 git clone https://www.modelscope.cn/Wan-AI/Wan2.2-S2V-14B.git
+
+아나콘다 환경 설치 : cuda toolkit 12.8, python 3.12, torch 2.8
+
+wan 폴더 내의 requirements 하나하나 설치 진행. (버전 최대한 맞추기)
+
+flash-attn 패키지는 윈도우용 whl을 다운 받아서 설치.
+
+https://github.com/kingbri1/flash-attention/releases (cu128, torch28,cp312 파일 찾아서 다운, 다운 폴더로 이동해서 pip install filename.whl 하면 됨)
+
+[참고]
+https://tskim-dev.tistory.com/entry/Windows%EC%97%90%EC%84%9C-Flash-Attention-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0
+
+triton 패키지는 윈도우용 whl을 다운 받아서 설치.(pyhton 3.12용)
+https://github.com/woct0rdho/triton-windows/releases/download/v3.2.0-windows.post10/triton-3.2.0-cp312-cp312-win_amd64.whl
+
+[참고]
+https://probe.tistory.com/entry/No-module-named-triton-%EC%9C%88%EB%8F%84%EC%9A%B0-%EC%82%AC%EC%9A%A9%EC%9E%90
+
+wan 폴더 내에 text2video.py에서 101, 110라인에 from_pretrained() 부분에 파라미터 추가
+use_safetensors=True
+torch_dtype=torch.bfloat16   # 메모리 줄이기
+low_cpu_mem_usage=True  # 메모리 줄이기
+offload_folder='C:/Users/my/Desktop/Wan2.2-main/Wan2.2-main/offload_temp"
+subfolder=None  # subfolder=config.low_noise_checkpoint
+                # device_map="auto", device_map="sequential" 
+
+offload_folder랑 device_map은 안 넣어야 하는듯...
+
+
+윈도우 파워셸 열고 아래 입력 후 엔터(패키지 설치할 때 파일이름 길이 제한 해제-리부트 필요)
+New-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\FileSystem" ` -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+
+
+SSD 용량을 VRAM으로 사용하기. (80GB~100GB)
+폴더에서 내컴퓨터 오른쪽 눌러서 속성 누른 후 고급시스템으로 들어감.
+성능-설정에서 다시 고급탭을 누르면 가상 메모리 변경 할 수 있음.
+맨 위에 모든 드라이브에 대한 페이징 파일 크기 자동 관리 체크 해제 후 사용자 지정 크기를 변경 후 설정 
+
+
+GPU메모리 24GB 이상...  실질적으로 구동 불가.
+
+
+ComfyUI, 허깅페이스에서 저용량으로 유저들이 최적화 한 방법이 있다고 함.
+
+​
+
+
+
+
+
+
+
 # Wan2.2
 
 <p align="center">
